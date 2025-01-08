@@ -38,53 +38,121 @@ void calculer_moyenne(Etudiant *etudiant) {
     }
     etudiant->moyenne = somme_notes / somme_coefficients;
 }
+// Confirm or correct student details
+void confirmer_ou_corriger_details(Etudiant *etudiant) {
+    char choix;
+    do {
+        printf("\nVeuillez confirmer les informations:\n");
+        printf("Numero d'inscription: %d\n", etudiant->numero_inscription);
+        printf("Nom: %s\n", etudiant->nom);
+        printf("Prenom: %s\n", etudiant->prenom);
+        printf("Annee de naissance:(1990-2020)%d\n", etudiant->annee_naissance);
+        printf("Classe: %s\n", etudiant->classe);
+        printf("Notes:(0-20) SFSD=%.2f, POO=%.2f, Analyse Math=%.2f, Algebre Lineaire=%.2f\n", etudiant->notes[0], etudiant->notes[1], etudiant->notes[2], etudiant->notes[3]);
+        printf("Moyenne: %.2f\n", etudiant->moyenne);
 
-// Add a new student
+        printf("Les informations sont-elles correctes ? (y/n): ");
+        scanf(" %c", &choix);
+
+        if (choix == 'n' || choix == 'N') {
+            printf("Recommencez la saisie des informations:\n");
+            printf("Numero d'inscription : ");
+            scanf("%d", &etudiant->numero_inscription);
+            printf("Nom: ");
+            scanf("%s", etudiant->nom);
+            printf("Prenom: ");
+            scanf("%s", etudiant->prenom);
+            do {
+                printf("Annee de naissance:(1990-2020) ");
+                scanf("%d", &etudiant->annee_naissance);
+            } while (etudiant->annee_naissance > 2020 || etudiant->annee_naissance < 1990);
+
+            printf("Classe: ");
+            scanf("%s", etudiant->classe);
+
+            printf("Notes pour les modules (SFSD, POO, Analyse Mathematique, Algebre Lineaire):\n");
+            for (int i = 0; i < 4; i++) {
+                do {
+                    printf("Module %d: (0-20) ", i + 1);
+                    scanf("%f", &etudiant->notes[i]);
+                } while (etudiant->notes[i] > 20 || etudiant->notes[i] < 0);
+            }
+
+            calculer_moyenne(etudiant);
+        }
+
+    } while (choix == 'n' || choix == 'N');
+}
+
 void ajouter_etudiant() {
-    FILE *file = fopen(FILENAME, "a");
+    FILE *file;
+    Etudiant etudiant;
+    int numero_unique;
+
+    do {
+        numero_unique = 1; // Assume the number is unique
+        file = fopen(FILENAME, "r");
+        if (!file) {
+            perror("Erreur lors de l'ouverture du fichier pour vérification");
+            return;
+        }
+
+        printf("Numero d'inscription : ");
+        scanf("%d", &etudiant.numero_inscription);
+
+        // Check if the number already exists
+        Etudiant temp;
+        while (fscanf(file, "%d,%19[^,],%19[^,],%d,%9[^,],%f,%f,%f,%f,%f,%d\n",
+                      &temp.numero_inscription, temp.nom, temp.prenom,
+                      &temp.annee_naissance, temp.classe,
+                      &temp.notes[0], &temp.notes[1],
+                      &temp.notes[2], &temp.notes[3],
+                      &temp.moyenne, &temp.supprime) == 11) {
+            if (temp.numero_inscription == etudiant.numero_inscription && temp.supprime == 0) {
+                numero_unique = 0; // Number is not unique
+                printf("Ce numero d'inscription existe deja. Veuillez en saisir un autre.\n");
+                break;
+            }
+        }
+        fclose(file);
+    } while (!numero_unique);
+
+    // Open file in append mode to add the new student
+    file = fopen(FILENAME, "a");
     if (!file) {
-        perror("Erreur lors de l'ouverture du fichier");
+        perror("Erreur lors de l'ouverture du fichier pour ajout");
         return;
     }
 
-    Etudiant etudiant;
-    printf("Numero d'inscription : ");
-    scanf("%d", &etudiant.numero_inscription);
+    // Collect student details
     printf("Nom : ");
     scanf("%s", etudiant.nom);
     printf("Prenom : ");
     scanf("%s", etudiant.prenom);
+
     do {
-        printf("Annee de naissance : ");
-    scanf("%d", &etudiant.annee_naissance);
-    }while(etudiant.annee_naissance>2020 || etudiant.annee_naissance<1990);
+        printf("Annee de naissance (1990-2020) : ");
+        scanf("%d", &etudiant.annee_naissance);
+    } while (etudiant.annee_naissance < 1990 || etudiant.annee_naissance > 2020);
 
     printf("Classe : ");
     scanf("%s", etudiant.classe);
-    printf("Notes pour les modules (SFSD, POO, Analyse Mathematique, Algebre Lineaire)\n");
-    do{
-        printf("SFSD : ");
-        scanf("%f",&etudiant.notes[0]);
-    }while(etudiant.notes[0]>20 || etudiant.notes[0]<0);
 
-    do{
-        printf("POO : ");
-    scanf("%f",&etudiant.notes[1]);
-    }while(etudiant.notes[1]>20 || etudiant.notes[1]<0);
+    printf("Notes pour les modules (SFSD, POO, Analyse Mathematique, Algebre Lineaire):\n");
+    for (int i = 0; i < 4; i++) {
+        do {
+            printf("Note module %d (0-20) : ", i + 1);
+            scanf("%f", &etudiant.notes[i]);
+        } while (etudiant.notes[i] < 0 || etudiant.notes[i] > 20);
+    }
 
-    do{
-        printf("Analyse Mathematique : ");
-    scanf("%f",&etudiant.notes[2]);
-    }while(etudiant.notes[2]>20 || etudiant.notes[2]<0);
-
-    do{
-        printf("Algebre Lineaire : ");
-    scanf("%f",&etudiant.notes[3]);
-    }while(etudiant.notes[3]>20 || etudiant.notes[3]<0);
-
+    // Calculate average and finalize details
     calculer_moyenne(&etudiant);
     etudiant.supprime = 0;
 
+    confirmer_ou_corriger_details(&etudiant);
+
+    // Write the student record to the file
     fprintf(file, "%d,%s,%s,%d,%s,%.2f,%.2f,%.2f,%.2f,%.2f,%d\n",
             etudiant.numero_inscription, etudiant.nom, etudiant.prenom,
             etudiant.annee_naissance, etudiant.classe,
@@ -92,8 +160,18 @@ void ajouter_etudiant() {
             etudiant.notes[2], etudiant.notes[3],
             etudiant.moyenne, etudiant.supprime);
     fclose(file);
-    printf("etudiant ajoutu avec succes.\n");
+
+    printf("Etudiant ajoute avec succes.\n");
+
+    // Loop to add multiple students if the user chooses
+    char choix;
+    printf("Voulez-vous ajouter un autre etudiant ? (y/n): ");
+    scanf(" %c", &choix);
+    if (choix == 'y' || choix == 'Y') {
+        ajouter_etudiant();
+    }
 }
+
 
 // Display a student's details
 void afficher_etudiant(Etudiant etudiant) {
