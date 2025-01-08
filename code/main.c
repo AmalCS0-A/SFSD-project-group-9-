@@ -3,7 +3,7 @@
 #include <string.h>
 
 #define FILENAME "etudiants.txt"
-#define MAX_NAME 15
+#define MAX_NAME 20
 
 typedef struct {
     int numero_inscription;
@@ -126,7 +126,7 @@ void rechercher_etudiant() {
     Etudiant etudiant;
     int trouve = 0;
 
-    while (fscanf(file, "%d,%49[^,],%49[^,],%d,%9[^,],%f,%f,%f,%f,%f,%d\n",
+    while (fscanf(file, "%d,%19[^,],%19[^,],%d,%9[^,],%f,%f,%f,%f,%f,%d\n",
                   &etudiant.numero_inscription, etudiant.nom, etudiant.prenom,
                   &etudiant.annee_naissance, etudiant.classe,
                   &etudiant.notes[0], &etudiant.notes[1],
@@ -169,7 +169,7 @@ void modifier_etudiant() {
     int trouve = 0;
     float a;
     int b;
-    while (fscanf(file, "%d,%49[^,],%49[^,],%d,%9[^,],%f,%f,%f,%f,%f,%d\n",
+    while (fscanf(file, "%d,%19[^,],%19[^,],%d,%9[^,],%f,%f,%f,%f,%f,%d\n",
                   &etudiant.numero_inscription, etudiant.nom, etudiant.prenom,
                   &etudiant.annee_naissance, etudiant.classe,
                   &etudiant.notes[0], &etudiant.notes[1],
@@ -194,22 +194,26 @@ void modifier_etudiant() {
             printf("Notes pour les modules\n");
             a=etudiant.notes[0];
             do{
-        printf("SFSD=(%.2f): ",a);
-        scanf("%f",&etudiant.notes[0]);
-    }while(etudiant.notes[0]>20 || etudiant.notes[0]<0);
-    a=etudiant.notes[1];
-    do{
-        printf("POO=(%.2f): ",a);
-    scanf("%f",&etudiant.notes[1]);
-    }while(etudiant.notes[1]>20 || etudiant.notes[1]<0);
-     a=etudiant.notes[2];
-    do{
-        printf("Analyse Mathematique=(%.2f): ",a);
-    scanf("%f",&etudiant.notes[2]);
-    }while(etudiant.notes[2]>20 || etudiant.notes[2]<0);
-    a=etudiant.notes[3];
-    do{
-        printf("Algebre Lineaire=(%.2f): ",a);
+                printf("SFSD=(%.2f): ",a);
+                scanf("%f",&etudiant.notes[0]);
+            }while(etudiant.notes[0]>20 || etudiant.notes[0]<0);
+            a=etudiant.notes[1];
+            do{
+                printf("POO=(%.2f): ",a);
+                scanf("%f",&etudiant.notes[1]);
+            }while(etudiant.notes[1]>20 || etudiant.notes[1]<0);
+
+            a=etudiant.notes[2];
+
+            do{
+                printf("Analyse Mathematique=(%.2f): ",a);
+                scanf("%f",&etudiant.notes[2]);
+               }while(etudiant.notes[2]>20 || etudiant.notes[2]<0);
+
+             a=etudiant.notes[3];
+
+             do{
+                 printf("Algebre Lineaire=(%.2f): ",a);
     scanf("%f",&etudiant.notes[3]);
     }while(etudiant.notes[3]>20 || etudiant.notes[3]<0);
 
@@ -249,7 +253,7 @@ void supprimer_etudiant_logique() {
 
     FILE *tempFile = fopen("temp.txt", "w");
     if (!tempFile) {
-        perror("Erreur lors de la cr�ation du fichier temporaire");
+        perror("Erreur lors de la creation du fichier temporaire");
         fclose(file);
         return;
     }
@@ -266,7 +270,7 @@ void supprimer_etudiant_logique() {
     Etudiant etudiant;
     int trouve = 0;
 
-    while (fscanf(file, "%d,%49[^,],%49[^,],%d,%9[^,],%f,%f,%f,%f,%f,%d\n",
+    while (fscanf(file, "%d,%19[^,],%19[^,],%d,%9[^,],%f,%f,%f,%f,%f,%d\n",
                   &etudiant.numero_inscription, etudiant.nom, etudiant.prenom,
                   &etudiant.annee_naissance, etudiant.classe, &etudiant.notes[0],
                   &etudiant.notes[1], &etudiant.notes[2], &etudiant.notes[3],
@@ -315,7 +319,7 @@ void reorganiser_etudiants() {
 
     Etudiant etudiant;
 
-    while (fscanf(file, "%d,%49[^,],%49[^,],%d,%9[^,],%f,%f,%f,%f,%f,%d\n",
+    while (fscanf(file, "%d,%19[^,],%19[^,],%d,%9[^,],%f,%f,%f,%f,%f,%d\n",
                   &etudiant.numero_inscription, etudiant.nom, etudiant.prenom,
                   &etudiant.annee_naissance, etudiant.classe, &etudiant.notes[0],
                   &etudiant.notes[1], &etudiant.notes[2], &etudiant.notes[3],
@@ -353,7 +357,7 @@ void extraire_etudiants_par_classe() {
     int count = 0;
 
     Etudiant etudiant;
-    while (fscanf(file, "%d,%49[^,],%49[^,],%d,%9[^,],%f,%f,%f,%f,%f,%d\n",
+    while (fscanf(file, "%d,%19[^,],%19[^,],%d,%9[^,],%f,%f,%f,%f,%f,%d\n",
                   &etudiant.numero_inscription, etudiant.nom, etudiant.prenom,
                   &etudiant.annee_naissance, etudiant.classe,
                   &etudiant.notes[0], &etudiant.notes[1],
