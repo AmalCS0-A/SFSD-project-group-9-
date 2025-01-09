@@ -247,6 +247,7 @@ void modifier_etudiant() {
     int trouve = 0;
     float a;
     int b;
+    char choix;
     while (fscanf(file, "%d,%19[^,],%19[^,],%d,%9[^,],%f,%f,%f,%f,%f,%d\n",
                   &etudiant.numero_inscription, etudiant.nom, etudiant.prenom,
                   &etudiant.annee_naissance, etudiant.classe,
@@ -256,6 +257,9 @@ void modifier_etudiant() {
         if (etudiant.numero_inscription == numero_inscription && etudiant.supprime == 0) {
             trouve = 1;
             printf("etudiant trouvu. Entrez les nouvelles informations.\n");
+
+
+            do{
 
             printf("Nom (%s) : ", etudiant.nom);
             scanf("%s", etudiant.nom);
@@ -292,12 +296,17 @@ void modifier_etudiant() {
 
              do{
                  printf("Algebre Lineaire=(%.2f): ",a);
-    scanf("%f",&etudiant.notes[3]);
-    }while(etudiant.notes[3]>20 || etudiant.notes[3]<0);
+                 scanf("%f",&etudiant.notes[3]);
+                 }while(etudiant.notes[3]>20 || etudiant.notes[3]<0);
 
             calculer_moyenne(&etudiant);
+            printf("Les informations sont-elles correctes ? (y/n): ");
+            scanf(" %c", &choix);
+            if(choix =='n'||choix=='N'){
+                printf("recomoncer la modification\n");
+            }
+            }while(choix == 'n'||choix=='N');
         }
-
         // Write either the modified or original record to the temp file
         fprintf(tempFile, "%d,%s,%s,%d,%s,%.2f,%.2f,%.2f,%.2f,%.2f,%d\n",
                 etudiant.numero_inscription, etudiant.nom, etudiant.prenom,
